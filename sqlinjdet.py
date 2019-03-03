@@ -162,8 +162,10 @@ def processLogin():
     def to_string(result):
         return ''.join(result)
     final=[]
+    pos=0;
     name=userid
-    pos=name.find("'");
+    if(name.find("'")!=-1):
+        pos=name.find("'")
     name=name[pos:len(name)]
     ml=list(name.split(" "))
 
@@ -173,85 +175,85 @@ def processLogin():
     mlsep=" "
     machinecheck=mlsep.join(machine)
     mlcheck=sep.join(ml)
-    if mlcheck.find("'--") or (mlcheck.find("--") or mlcheck.find("drop"+table_name) or mlcheck.find("unionselect")) :
-        for i in range(0,500):
-            result = ["SQLAttack"]
-            result = expansion(result) # Expand our starting list
-            final.append(to_string(result))
-        print(final, sep="\n")
-        x = list(userid.split(" "))
-        y = sep.join(x)
-        print(y)
-        if y in final:
-            print("pattern found in cfg")
-        else:
-            print("not found in cfg")
+    if mlcheck.find("'--")!=-1 or mlcheck.find("--")!=-1 or mlcheck.find("drop"+table_name)!=-1 or mlcheck.find("unionselect")!=-1 :
+            for i in range(0,500):
+                result = ["SQLAttack"]
+                result = expansion(result) # Expand our starting list
+                final.append(to_string(result))
+            print(final, sep="\n")
+            x = list(userid.split(" "))
+            y = sep.join(x)
+            print(y)
+            if y in final:
+                print("pattern found in cfg")
+            else:
+                print("not found in cfg")
 
-        nltk.download('stopwords')
+            nltk.download('stopwords')
 
-        documents = ["or 123=123",
-                     "or '@@'='@@'",
-                     "or 'rishi'='rishi'",
-                     "or '::'='::'",
-                     "or '#$%'='#$%'",
-                     "or '98654'='98654'",
-                     "or '  '='  ''",
-                     "or 18790=18790",
-                     "or '!@#$%^&*9'='!@#$%^&*9'",
-                     "or 1234567890=1234567890",
-                     "drop truncate delete insert from where select into drop where",
-                     "union select insert union where select from drop select where insert drop into from delete",
-                     "union modify drop select union from select into insert drop truncate ",
-                     "union select union where from insert into drop truncate where union delete select from insert drop",
-                     "union  where select insert drop truncate delete union where truncate delete select from",
-                     "union select union where drop truncate delete from where insert select into delete where",
-                     "union select where from delete truncate drop where insert into select from",
-                     "select from insert into delete where drop select union delete where truncate",
-                     "union select where from insert into drop where delete truncate from into",
-                     "union select from insert where into drop  delete where truncate",
-                     "union select where from insert into where drop insert drop into where insert from insert",
-                     "union insert into where select from select where insert into drop insert into drop",
-                     "union drop where select from select insert into  select where insert into drop insert",
-                     "union insert into where select from select  into select from where insert into drop from",
-                     "union where  update from select where insert select from drop where select insert drop into from",
-                     "union modify where drop select  from select where into insert from where select insert drop from",
-                     "union select where from insert into select from select drop insert select where insert from into",
-                     "union insert where  into select from select insert into select insert drop insert from inot",
-                     "union modify select from select insert drop select from drop insert from into drop",
-                     "union select from select from select select insert from into drop  insert into"
-                     ]
-        stop = set(stopwords.words('english'))
-        stop.remove(('or'))
-        stop.remove(('from'))
-        stop.remove(('into'))
-        stop.remove(('where'))
-        vectorizer = TfidfVectorizer(stop)
-        X = vectorizer.fit_transform(documents)
+            documents = ["or 123=123",
+                         "or '@@'='@@'",
+                         "or 'rishi'='rishi'",
+                         "or '::'='::'",
+                         "or '#$%'='#$%'",
+                         "or '98654'='98654'",
+                         "or '  '='  ''",
+                         "or 18790=18790",
+                         "or '!@#$%^&*9'='!@#$%^&*9'",
+                         "or 1234567890=1234567890",
+                         "drop truncate delete insert from where select into drop where",
+                         "union select insert union where select from drop select where insert drop into from delete",
+                         "union modify drop select union from select into insert drop truncate ",
+                         "union select union where from insert into drop truncate where union delete select from insert drop",
+                         "union  where select insert drop truncate delete union where truncate delete select from",
+                         "union select union where drop truncate delete from where insert select into delete where",
+                         "union select where from delete truncate drop where insert into select from",
+                         "select from insert into delete where drop select union delete where truncate",
+                         "union select where from insert into drop where delete truncate from into",
+                         "union select from insert where into drop  delete where truncate",
+                         "union select where from insert into where drop insert drop into where insert from insert",
+                         "union insert into where select from select where insert into drop insert into drop",
+                         "union drop where select from select insert into  select where insert into drop insert",
+                         "union insert into where select from select  into select from where insert into drop from",
+                         "union where  update from select where insert select from drop where select insert drop into from",
+                         "union modify where drop select  from select where into insert from where select insert drop from",
+                         "union select where from insert into select from select drop insert select where insert from into",
+                         "union insert where  into select from select insert into select insert drop insert from inot",
+                         "union modify select from select insert drop select from drop insert from into drop",
+                         "union select from select from select select insert from into drop  insert into"
+                         ]
+            stop = set(stopwords.words('english'))
+            stop.remove(('or'))
+            stop.remove(('from'))
+            stop.remove(('into'))
+            stop.remove(('where'))
+            vectorizer = TfidfVectorizer(stop)
+            X = vectorizer.fit_transform(documents)
 
-        true_k = 2
-        model = KMeans(n_clusters=true_k, init='k-means++', max_iter=300, n_init=1)
-        model.fit(X)
+            true_k = 2
+            model = KMeans(n_clusters=true_k, init='k-means++', max_iter=300, n_init=1)
+            model.fit(X)
 
-        # prediction=2
-        # if(machinecheck!=""):
-        print("Prediction")
-        first_test=machinecheck
-        print(first_test)
-        Z = vectorizer.transform([first_test])
-        prediction = model.predict(Z)
-        if("union" in first_test):
-            print(userid," :","union attack",prediction)
-        elif("or" in first_test):
-            print(userid," :","boolean attack",prediction)
-        elif(userid.find("drop") or userid.find("insert") or userid.find("modify") or userid.find("update") or userid.find("delete")):
-            print(userid," :","piggy based attack",prediction)
-        else:
-            print(userid," :","comment attack",prediction)
+            # prediction=2
+            # if(machinecheck!=""):
+            print("Prediction")
+            first_test=machinecheck
+            print(first_test)
+            Z = vectorizer.transform([first_test])
+            prediction = model.predict(Z)
+            if("union" in first_test):
+                print(userid," :","union attack",prediction)
+            elif("or" in first_test):
+                print(userid," :","boolean attack",prediction)
+            elif(userid.find("drop") or userid.find("insert") or userid.find("modify") or userid.find("update") or userid.find("delete")):
+                print(userid," :","piggy based attack",prediction)
+            else:
+                print(userid," :","comment attack",prediction)
 
 
-        if y in final or (prediction==0 or prediction==1):
-                print('found attack pattern')
-                return render_template('index.html')
+            if y in final or (prediction==0 or prediction==1):
+                    print('found attack pattern')
+                    return render_template('index.html')
 
 
     else:
@@ -264,13 +266,10 @@ def processLogin():
     cur1 = conn1.cursor()
 
     sqlcmd1 = "SELECT * FROM dbo.Users WHERE username = '"+userid+"' AND password = '"+password+"'";
-    listsql=list(sqlcmd1.split(" "))
-    checksql=sep.join(listsql)
 
 
     #SELECT * FROM dbo.Users WHERE username = 'rishi'-- AND password = 'ksdahfhkhfa'"
     print(sqlcmd1)
-    print(checksql)
 
 
     cur1.execute(sqlcmd1)
